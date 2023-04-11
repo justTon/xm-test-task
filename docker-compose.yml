@@ -1,0 +1,28 @@
+version: '1'
+
+services:
+  app:
+    image: 'crypto-recommend-docker:latest'
+    build:
+      context: .
+    container_name: app
+    ports:
+      - '8080:8080'
+    depends_on:
+      - db
+    environment:
+      - SUPPORTED_CRYPTOS=BTC,DOGE,ETH,LTC,XRP
+      - INPUT_CRYPTO_PRICES_FOLDER=/var/local/prices/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/timescale
+      - SPRING_DATASOURCE_USERNAME=timescale
+      - SPRING_DATASOURCE_PASSWORD=timescale
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  db:
+    image: 'timescale/timescaledb-ha:pg14-latest'
+    container_name: db
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=timescale
+      - POSTGRES_PASSWORD=timescale
